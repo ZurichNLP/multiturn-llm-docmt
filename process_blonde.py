@@ -13,10 +13,6 @@ def parse_input(data):
     for item in data:
         translation = item['translation']
         ref = item['reference']
-        # 使用nltk的sent_tokenize进行句子分割
-        #translation= nltk.sent_tokenize(translation)
-        #ref = nltk.sent_tokenize(ref)
-        # Segment by 
         sentences = re.split(r'(?<=[.!?]) (?=[A-Z])', translation)
         item['translation'] = sentences
         sentences = re.split(r'(?<=[.!?]) (?=[A-Z])', ref)
@@ -70,23 +66,6 @@ def main():
             print(input_path, str_score)
             res_all.append({'input_path': input_path, 'score': str_score})
         last_lang = lang
-    # with open(args.output_path, "a") as f:
-    #     json.dump(res_all, f)
-        # print(item[''])
-    # blonde = BLONDE()
-    # translations = []
-    # references = []
-    # for item in data:
-    #     # print(item['translation_split'])
-    #     # print(item['reference_split'])
-    #     translations.append(item['translation_split'])
-    #     references.append(item['reference_split'])
-    # #print(translations[0])
-    # #print(references[0])
-    # score = blonde.corpus_score(translations, [references])
-    # print(score)
-    # with open(args.output_path, "w") as f:
-    #     json.dump(data, f)
 
 if __name__ == "__main__":
     main()
