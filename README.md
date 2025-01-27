@@ -8,7 +8,7 @@ bash scripts/start_vllm.sh
 
 ## 2. Prepare data
 
-We get and parse the data from the WMT24 dataset (https://www2.statmt.org/wmt24/translation-task.html)
+We get and parse the data from the WMT24 dataset (https://www2.statmt.org/wmt24/translation-task.html), you can also directly use our parsed data in `wmt24_processed`.
 
 ## 3. Run translation
 
