@@ -61,6 +61,10 @@ def eval_comet_ours(src_file, tgt_file, ref_file, is_kiwi=True, is_ours_model=Fa
     for item in ref_lines:
         for sent in item['reference_split']:
             ref_res.append(sent)
+    # skip the canary guid line
+    src_res = src_res[1:]
+    tgt_res = tgt_res[1:]
+    ref_res = ref_res[1:]
     print(len(src_res))
     print(len(tgt_res))
     print(len(ref_res))
@@ -134,7 +138,8 @@ def eval_bleu(ref_file, tgt_file, data_type='txt', setting='all'):
         tgt_lines = [line['translation'] for line in tgt_lines]
     ref_lines = [line.strip() for line in ref_lines]
     tgt_lines = [line.strip() for line in tgt_lines]
-    # ref_lines = ref_lines[1:]
+    ref_lines = ref_lines[1:] # skip the canary guid line
+    tgt_lines = tgt_lines[1:] # skip the canary guid line
     print(len(ref_lines))
     print(len(tgt_lines))
     from sacrebleu import corpus_bleu
