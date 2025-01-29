@@ -200,7 +200,7 @@ def main():
                 bleu_res = {'lang_pair': lang_pair, 'model': model, 'bleu_score': score, 'setting': args.setting}
                 bleu_res_all.append(bleu_res)
                 print(bleu_res)
-                with open('res/dbleu_pred_all_{}.jsonl'.format(model.split('/')[0]), 'a') as f:
+                with open('result/dbleu_pred_all_{}.jsonl'.format(model.split('/')[0]), 'a') as f:
                     for item in bleu_res_all:
                         f.write(json.dumps(item) + '\n')
             elif args.metric == 'comet':
@@ -211,7 +211,7 @@ def main():
                 score = comet_scores['system_score']
                 commet_res = {'lang_pair': lang_pair, 'model': model, 'comet_score': score, 'setting': args.setting}
                 commet_res_all.append(commet_res)
-                with open('res/comet_res_{}.jsonl'.format(model.split('/')[0]), 'a') as f:
+                with open('result/comet_res_{}.jsonl'.format(model.split('/')[0]), 'a') as f:
                     for item in commet_res_all:
                         f.write(json.dumps(item) + '\n')
             # print(commet_res)

@@ -17,8 +17,8 @@ if [ "$SETTING" == "mturn_icl" ]; then
     --output_file outputs/${MODEL_NAME}/wmt2024_${SRC_LANG}-${TGT_LANG}_mturn_icl.jsonl \
     --is_icl \
     --is_og \
-    --is_conversation \
     --max_new_tokens 512 \
+    --is_conversation \
     --lang_direction "${SRC_LANG}-${TGT_LANG}" \
     --data_num "${NUM}"
 elif [ "$SETTING" == "seg_icl" ]; then

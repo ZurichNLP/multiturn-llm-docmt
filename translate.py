@@ -126,7 +126,7 @@ def get_trans_prompt(p, lang_direction, is_icl=False, is_tower=False, is_og=Fals
                  'content': 'You are a good translator.'
                  }]
 
-    if is_icl:
+    if is_icl and not is_og:
         # if lang_direction == 'x-en':
         source_sentences = EN_EXAMPLES
         mapping_lang = {
@@ -170,7 +170,7 @@ def get_trans_prompt(p, lang_direction, is_icl=False, is_tower=False, is_og=Fals
                 messages.append({'role': 'assistant',
                              'content': 'Translation: ' + target_sentence,
                              })
-    if is_tower:
+    elif is_tower:
         messages.append({'role': 'user',
                      'content': user_tower_prompt.format(source_lang, target_lang, source_lang, p, target_lang),
                  })
@@ -204,6 +204,8 @@ def get_trans_prompt(p, lang_direction, is_icl=False, is_tower=False, is_og=Fals
         messages.append({'role': 'user',
                      'content': user_prompt.format(target_lang, source_lang, p),
                      })
+    print('messages', messages)
+    print('-'*100)
     
     return messages
 

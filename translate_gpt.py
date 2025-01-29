@@ -113,7 +113,7 @@ def get_trans_prompt(p, lang_direction, is_icl=False, is_tower=False, is_og=Fals
                  'content': 'You are a good translator.'
                  }]
 
-    if is_icl:
+    if is_icl and not is_og:
         source_sentences = EN_EXAMPLES
         mapping_lang = {
             'en-de': DE_EXAMPLES,
@@ -160,7 +160,7 @@ def get_trans_prompt(p, lang_direction, is_icl=False, is_tower=False, is_og=Fals
         messages.append({'role': 'user',
                      'content': user_tower_prompt.format(source_lang, target_lang, source_lang, p, target_lang),
                  })
-    elif is_og and is_icl:
+    if is_og and is_icl:
         mapping_lang = {
             'en-ru': EN_RU_EXAMPLES,
             'en-zh': EN_ZH_EXAMPLES,
@@ -190,7 +190,8 @@ def get_trans_prompt(p, lang_direction, is_icl=False, is_tower=False, is_og=Fals
         messages.append({'role': 'user',
                      'content': user_prompt.format(target_lang, source_lang, p),
                      })
-    
+    print('messages', messages)
+    print('-'*100)
     return messages
 
 if __name__ == '__main__':
@@ -281,34 +282,19 @@ if __name__ == '__main__':
             translations.append(res_all)
             translations_split.append(translation_split)
     elif args.is_segment:
-        if args.one_by_one:
-            for trans_prompt in tqdm(trans_prompts):
-                batch_translation = []
-                translation_split = []
-                for sentence in trans_prompt:
-                    trans_sentence = translator.generate(sentence)
-                    if args.is_tower or args.is_og:
-                        trans_sentence = remove_triple_backlashes(trans_sentence)
-                    else:
-                        trans_sentence = trans_sentence[len('Translation: '):]
-                    batch_translation.append(trans_sentence)
-                    translation_split.append(trans_sentence)
-                translations.append(' '.join(batch_translation))
-                translations_split.append(translation_split)
-        else:
-            for trans_prompt in tqdm(trans_prompts):
-                translation_split = []
-                batch_translations = []
-                for sentence in trans_prompt:
-                    trans_sentence = translator.generate(sentence)
-                    if args.is_tower or args.is_og:
-                        trans_sentence = remove_triple_backlashes(trans_sentence)
-                    else:
-                        trans_sentence = trans_sentence[len('Translation: '):]
-                    batch_translations.append(trans_sentence)
-                    translation_split.append(trans_sentence)
-                translations.append(' '.join(batch_translations))
-                translations_split.append(translation_split)
+        for trans_prompt in tqdm(trans_prompts):
+            batch_translation = []
+            translation_split = []
+            for sentence in trans_prompt:
+                trans_sentence = translator.generate(sentence)
+                if args.is_tower or args.is_og:
+                    trans_sentence = remove_triple_backlashes(trans_sentence)
+                else:
+                    trans_sentence = trans_sentence[len('Translation: '):]
+                batch_translation.append(trans_sentence)
+                translation_split.append(trans_sentence)
+            translations.append(' '.join(batch_translation))
+            translations_split.append(translation_split)
     else:
         for trans_prompt in tqdm(trans_prompts):
             trans_sentence = translator.generate(trans_prompt)
