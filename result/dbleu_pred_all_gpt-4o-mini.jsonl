@@ -65,3 +65,25 @@
 {"lang_pair": "en_zh", "model": "gpt-4o-mini", "bleu_score": 44.5910352349686, "setting": "mturn"}
 {"lang_pair": "en_zh", "model": "gpt-4o-mini", "bleu_score": 44.864681238367574, "setting": "mturn_icl"}
 
+{"lang_pair": "en-cs", "model": "gpt-4o-mini", "bleu_score": 30.126890865738872, "setting": "mturn_context"}
+{"lang_pair": "en-de", "model": "gpt-4o-mini", "bleu_score": 34.71157529881061, "setting": "mturn_context"}
+{"lang_pair": "en-es", "model": "gpt-4o-mini", "bleu_score": 45.841425575374544, "setting": "mturn_context"}
+{"lang_pair": "en-hi", "model": "gpt-4o-mini", "bleu_score": 27.18567651590632, "setting": "mturn_context"}
+{"lang_pair": "en-is", "model": "gpt-4o-mini", "bleu_score": 21.936024693187104, "setting": "mturn_context"}
+{"lang_pair": "en-ja", "model": "gpt-4o-mini", "bleu_score": 29.927983736699648, "setting": "mturn_context"}
+{"lang_pair": "en-ru", "model": "gpt-4o-mini", "bleu_score": 24.650822211418397, "setting": "mturn_context"}
+{"lang_pair": "en-uk", "model": "gpt-4o-mini", "bleu_score": 30.198067550798328, "setting": "mturn_context"}
+{"lang_pair": "en-zh", "model": "gpt-4o-mini", "bleu_score": 45.058926423340935, "setting": "mturn_context"}
+{"lang_pair": "cs-uk", "model": "gpt-4o-mini", "bleu_score": 33.40830826028789, "setting": "mturn_context"}
+{"lang_pair": "ja-zh", "model": "gpt-4o-mini", "bleu_score": 34.59593736821648, "setting": "mturn_context"}
+{"lang_pair": "en-cs", "model": "gpt-4o-mini", "bleu_score": 30.742726787824253, "setting": "mturn_icl_context"}
+{"lang_pair": "en-de", "model": "gpt-4o-mini", "bleu_score": 34.938500765548014, "setting": "mturn_icl_context"}
+{"lang_pair": "en-es", "model": "gpt-4o-mini", "bleu_score": 45.92767248605688, "setting": "mturn_icl_context"}
+{"lang_pair": "en-hi", "model": "gpt-4o-mini", "bleu_score": 27.50658349956222, "setting": "mturn_icl_context"}
+{"lang_pair": "en-is", "model": "gpt-4o-mini", "bleu_score": 22.35811445989262, "setting": "mturn_icl_context"}
+{"lang_pair": "en-ja", "model": "gpt-4o-mini", "bleu_score": 30.401271560202886, "setting": "mturn_icl_context"}
+{"lang_pair": "en-ru", "model": "gpt-4o-mini", "bleu_score": 25.034515511734853, "setting": "mturn_icl_context"}
+{"lang_pair": "en-uk", "model": "gpt-4o-mini", "bleu_score": 30.409139756874914, "setting": "mturn_icl_context"}
+{"lang_pair": "en-zh", "model": "gpt-4o-mini", "bleu_score": 44.88466504156369, "setting": "mturn_icl_context"}
+{"lang_pair": "cs-uk", "model": "gpt-4o-mini", "bleu_score": 33.37107391866718, "setting": "mturn_icl_context"}
+{"lang_pair": "ja-zh", "model": "gpt-4o-mini", "bleu_score": 34.49076251023912, "setting": "mturn_icl_context"}

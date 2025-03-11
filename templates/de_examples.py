@@ -89,6 +89,21 @@ EN_ZH_EXAMPLES=[
   }
 ]
 
+ZH_EN_EXAMPLES=[
+  {
+    "source": "只有那些被观察了三次或更多次的发音，或者类似的。",
+    "target": "And only the pronunciations that were observed three times or more, or something like that."
+  },
+  {
+    "source": "实验并不创造以上所述事实，但选择进行哪些实验控制了哪些事实会被发现。",
+    "target": "The experiments don't create the facts on this reading, but the choice of which experiments to conduct controls which facts are discovered."
+  },
+  {
+    "source": "一人在泰特英国抗议变装皇后儿童活动中被捕",
+    "target": "One arrested amid Tate Britain protest over drag queen children's event"
+  }
+]
+
 EN_UK_EXAMPLES=[
   {
     "source": "Will a community blossom around the user-generated content piece of the game?",

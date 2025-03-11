@@ -9,7 +9,7 @@ import sacrebleu
 import copy
 from transformers import GemmaTokenizer, GemmaTokenizerFast
 from templates.de_examples import DE_EXAMPLES, EN_EXAMPLES, RU_EXAMPLES, ZH_EXAMPLES, HI_EXAMPLES, ES_EXAMPLES, CS_EXAMPLES, IS_EXAMPLES, JA_EXAMPLES, UK_EXAMPLES, X_EXAMPLES
-from templates.de_examples import EN_DE_EXAMPLES, EN_RU_EXAMPLES, EN_ZH_EXAMPLES, EN_HI_EXAMPLES, EN_ES_EXAMPLES, EN_CS_EXAMPLES, EN_IS_EXAMPLES, EN_JA_EXAMPLES, EN_UK_EXAMPLES, CS_UK_EXAMPLES, JA_ZH_EXAMPLES
+from templates.de_examples import EN_DE_EXAMPLES, EN_RU_EXAMPLES, EN_ZH_EXAMPLES, EN_HI_EXAMPLES, EN_ES_EXAMPLES, EN_CS_EXAMPLES, EN_IS_EXAMPLES, EN_JA_EXAMPLES, EN_UK_EXAMPLES, CS_UK_EXAMPLES, JA_ZH_EXAMPLES, ZH_EN_EXAMPLES
 from tqdm import tqdm
 # def segment_document(processed_documents):
 #     return [doc.split('\n') for doc in processed_documents]
@@ -115,7 +115,7 @@ def get_trans_prompt(p, lang_direction, is_icl=False, is_tower=False, is_og=Fals
         'x-en': ['source', 'English'],
     }
     source_lang, target_lang = direct_mapping[lang_direction]
-    user_tower_prompt = 'You need to translate the following {} text into {}. \n{}: {} \n{}:"'
+    user_tower_prompt = 'Translate the following text from {} into {}. \n{}: {} \n{}:'
     user_prompt = 'You need to translate the input {} sentence to {}. Input: {} Please directly reply with the translation, start with "Translation:"'
     messages = [{'role': 'system',
                  'content': 'You are a good translator.'
@@ -125,6 +125,8 @@ def get_trans_prompt(p, lang_direction, is_icl=False, is_tower=False, is_og=Fals
         messages = [{'role': 'system',
                  'content': 'You are a good translator.'
                  }]
+        if is_tower:
+            messages = []
 
     if is_icl and not is_og:
         # if lang_direction == 'x-en':
@@ -170,14 +172,11 @@ def get_trans_prompt(p, lang_direction, is_icl=False, is_tower=False, is_og=Fals
                 messages.append({'role': 'assistant',
                              'content': 'Translation: ' + target_sentence,
                              })
-    elif is_tower:
-        messages.append({'role': 'user',
-                     'content': user_tower_prompt.format(source_lang, target_lang, source_lang, p, target_lang),
-                 })
     elif is_og and is_icl:
         mapping_lang = {
             'en-ru': EN_RU_EXAMPLES,
             'en-zh': EN_ZH_EXAMPLES,
+            'zh-en': ZH_EN_EXAMPLES,
             'en-hi': EN_HI_EXAMPLES,
             'en-es': EN_ES_EXAMPLES,
             'en-cs': EN_CS_EXAMPLES,
@@ -190,22 +189,39 @@ def get_trans_prompt(p, lang_direction, is_icl=False, is_tower=False, is_og=Fals
         }
         pair_sentences = mapping_lang[lang_direction]
         for item in pair_sentences:
-            messages.append({'role': 'user',
+            if is_tower:
+                messages.append({'role': 'user',
+                             'content': user_tower_prompt.format(source_lang, target_lang, source_lang, item['source'], target_lang),
+                             })
+                messages.append({'role': 'assistant',
+                             'content': f"{item['target']}",
+                             })
+            else:
+                messages.append({'role': 'user',
                              'content': user_prompt.format(target_lang, source_lang, item['source']),
                              })
-            messages.append({'role': 'assistant',
+                messages.append({'role': 'assistant',
                              'content': f"```{item['target']}```",
                              })
-   
-        messages.append({'role': 'user',
+        if is_tower:
+            messages.append({'role': 'user',
+                         'content': user_tower_prompt.format(source_lang, target_lang, source_lang, p, target_lang),
+                         })
+        else:
+            messages.append({'role': 'user',
                      'content': user_prompt.format(target_lang, source_lang, p),
                      })
     else:
-        messages.append({'role': 'user',
+        if is_tower:
+            messages.append({'role': 'user',
+                         'content': user_tower_prompt.format(source_lang, target_lang, source_lang, p, target_lang),
+                         })
+        else:
+            messages.append({'role': 'user',
                      'content': user_prompt.format(target_lang, source_lang, p),
                      })
-    print('messages', messages)
-    print('-'*100)
+    # print('messages', messages)
+    # print('-'*100)
     
     return messages
 
@@ -219,6 +235,17 @@ def save_as_txt(file_path, data):
     with open(file_path, 'w', encoding='utf-8') as f:
         for item in data:
             f.write(item + '\n')
+
+def get_context_prompt(doct_text):
+    sys_prompt = 'You are a good translator.'
+    user_prompt = f'You will be given a document, and you need to do a translation sentence by sentence. The document is: \n {doct_text}'
+    messages = [{'role': 'system',
+                 'content': sys_prompt
+                 },
+                {'role': 'user',
+                 'content': user_prompt
+                 }]
+    return messages
 
 if __name__ == '__main__':
     # Set up argument parsing
@@ -243,6 +270,7 @@ if __name__ == '__main__':
     parser.add_argument('--is_sentence', action='store_true')
     parser.add_argument('--one_by_one', action='store_true', help='input one by one')
     parser.add_argument('--is_icl', action='store_true')
+    parser.add_argument('--is_provide_all_first', action='store_true')
     parser.add_argument('--is_tower', action='store_true')
     parser.add_argument('--is_og', action='store_true')
     parser.add_argument('--is_save_txt', action='store_true')
@@ -287,11 +315,27 @@ if __name__ == '__main__':
     
 
     # Perform translation in batches
+    print('args.is_tower', args.is_tower)
+    print('args.is_og', args.is_og)
+    print('args.is_icl', args.is_icl)
+    print('args.lang_direction', args.lang_direction)
+    print('args.is_conversation', args.is_conversation)
+    print('args.is_segment', args.is_segment)
+    print('args.is_sentence', args.is_sentence)
+    print('args.one_by_one', args.one_by_one)
+    print('args.data_num', args.data_num)
+    print('args.is_provide_all_first', args.is_provide_all_first)
     translations = []
     trans_prompts = []
     if args.is_conversation:
         for doc in source_texts:
             trans_prompt = []
+            if args.is_provide_all_first:
+                doc_all_text = ''
+                for text in doc:
+                    doc_all_text += text + ' '
+                context_prompt = get_context_prompt(doc_all_text)
+                trans_prompt.append(context_prompt)
             for text in doc:
                 text = get_trans_prompt(text, args.lang_direction, args.is_icl, args.is_tower, args.is_og, args.shot_num)
                 trans_prompt.append(text)
@@ -346,10 +390,17 @@ if __name__ == '__main__':
             prev_prefix = []
             res_all = ' '
             translation_split = []
+            if args.is_provide_all_first:
+                prev_prefix = trans_prompt.pop(0)
+                #prev_prefix = tokenizer.apply_chat_template(prev_prefix, add_generation_prompt=True, tokenize=False)
             for text in trans_prompt:
                 #prev_prefix.append(text[-1])
                 # translation_split = []
-                if len(prev_prefix) == 0:
+                if args.is_provide_all_first and len(prev_prefix) == 2:
+                    text.pop(0)
+                    prev_prefix.extend(text)
+                    text = tokenizer.apply_chat_template(prev_prefix, add_generation_prompt=True, tokenize=False)
+                elif len(prev_prefix) == 0:
                     prev_prefix = text
                     text = tokenizer.apply_chat_template(prev_prefix, add_generation_prompt=True, tokenize=False)
                 else:
@@ -363,9 +414,13 @@ if __name__ == '__main__':
                 #print(output[0])
                 res = {'role': 'assistant', 'content': output}
                 #print(output[0][0])
+                #print(prev_prefix)
                 prev_prefix.append(res)
-                if args.is_tower or args.is_og:
-                    res['content'] = remove_triple_backlashes(res['content'])
+                #print('prev_prefix', prev_prefix)
+                #print('-'*100)
+                if args.is_og:
+                    if not args.is_tower:
+                        res['content'] = remove_triple_backlashes(res['content'])
                     res_all += res['content'] + ' '
                     translation_split.append(res['content'])
                 else:
@@ -395,14 +450,16 @@ if __name__ == '__main__':
             for doc in trans_prompts:
                 trans_sentence = translator.generate([doc])
                 trans_sentence = trans_sentence[0][0]
-                trans_sentence = remove_triple_backlashes(trans_sentence)
+                if not args.is_tower:
+                    trans_sentence = remove_triple_backlashes(trans_sentence)
                 batch_translations.append(trans_sentence)
         else:
             batch_translations = translator.generate(trans_prompts)
             for i in range(len(batch_translations)):
                 if args.is_tower or args.is_og:
                     batch_translations[i] = batch_translations[i][0]
-                    batch_translations[i] = remove_triple_backlashes(batch_translations[i])
+                    if not args.is_tower:
+                        batch_translations[i] = remove_triple_backlashes(batch_translations[i])
                 else:
                     batch_translations[i] = batch_translations[i][0][len('Translation: '):]
         translations.extend(batch_translations)
@@ -415,9 +472,10 @@ if __name__ == '__main__':
             translation_split = []
             processed_translations = ''
             for j in range(len(translations[i])):
-                if args.is_tower or args.is_og:
+                if args.is_og:
                     translations[i][j] = translations[i][j][0]
-                    translations[i][j] = remove_triple_backlashes(translations[i][j])
+                    if not args.is_tower:
+                        translations[i][j] = remove_triple_backlashes(translations[i][j])
                 else:
                     translations[i][j] = translations[i][j][0][len('Translation: '):]
                 processed_translations += translations[i][j] + ' '

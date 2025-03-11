@@ -21,6 +21,31 @@ if [ "$SETTING" == "mturn_icl" ]; then
     --is_conversation \
     --lang_direction "${SRC_LANG}-${TGT_LANG}" \
     --data_num "${NUM}"
+elif [ "$SETTING" == "mturn_context" ]; then
+  python3 translate_gpt.py \
+    --source_file ${DATA_PATH}/wmt24_${SRC_LANG}-${TGT_LANG}.${SRC_LANG}.txt \
+    --target_file ${DATA_PATH}/wmt24_${SRC_LANG}-${TGT_LANG}.${TGT_LANG}.txt \
+    --model_name $MODEL_NAME_PATH \
+    --output_file outputs/${MODEL_NAME}/wmt2024_${SRC_LANG}-${TGT_LANG}_mturn_context.jsonl \
+    --is_conversation \
+    --is_og \
+    --is_provide_all_first \
+    --max_new_tokens 512 \
+    --lang_direction "${SRC_LANG}-${TGT_LANG}" \
+    --data_num "${NUM}"
+elif [ "$SETTING" == "mturn_icl_context" ]; then
+  python3 translate_gpt.py \
+    --source_file ${DATA_PATH}/wmt24_${SRC_LANG}-${TGT_LANG}.${SRC_LANG}.txt \
+    --target_file ${DATA_PATH}/wmt24_${SRC_LANG}-${TGT_LANG}.${TGT_LANG}.txt \
+    --model_name $MODEL_NAME_PATH \
+    --output_file outputs/${MODEL_NAME}/wmt2024_${SRC_LANG}-${TGT_LANG}_mturn_icl_context.jsonl \
+    --is_conversation \
+    --is_og \
+    --is_provide_all_first \
+    --is_icl \
+    --max_new_tokens 512 \
+    --lang_direction "${SRC_LANG}-${TGT_LANG}" \
+    --data_num "${NUM}"
 elif [ "$SETTING" == "seg_icl" ]; then
   python3 translate_gpt.py \
     --source_file ${DATA_PATH}/wmt24_${SRC_LANG}-${TGT_LANG}.${SRC_LANG}.txt \

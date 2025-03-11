@@ -24,8 +24,9 @@ if [ "$SETTING" == "mturn_icl" ]; then
     --output_file outputs/${MODEL_NAME}/wmt2024_${SRC_LANG}-${TGT_LANG}_mturn_icl.jsonl \
     --is_icl \
     --is_og \
+    --is_tower \
     --is_conversation \
-    --max_new_tokens 512 \
+    --max_new_tokens 256 \
     --gpu_memory_utilization 0.9 \
     --lang_direction "${SRC_LANG}-${TGT_LANG}" \
     --data_num "${NUM}"
@@ -38,7 +39,8 @@ elif [ "$SETTING" == "seg_icl" ]; then
     --is_segment \
     --is_icl \
     --is_og \
-    --max_new_tokens 512 \
+    --is_tower \
+    --max_new_tokens 256 \
     --gpu_memory_utilization 0.9 \
     --lang_direction "${SRC_LANG}-${TGT_LANG}" \
     --data_num "${NUM}"
@@ -50,7 +52,8 @@ elif [ "$SETTING" == "mturn" ]; then
     --output_file outputs/${MODEL_NAME}/wmt2024_${SRC_LANG}-${TGT_LANG}_mturn.jsonl \
     --is_conversation \
     --is_og \
-    --max_new_tokens 512 \
+    --is_tower \
+    --max_new_tokens 256 \
     --gpu_memory_utilization 0.9 \
     --lang_direction "${SRC_LANG}-${TGT_LANG}" \
     --data_num "${NUM}"
@@ -62,7 +65,8 @@ elif [ "$SETTING" == "seg" ]; then
     --output_file outputs/${MODEL_NAME}/wmt2024_${SRC_LANG}-${TGT_LANG}_seg.jsonl \
     --is_segment \
     --is_og \
-    --max_new_tokens 512 \
+    --is_tower \
+    --max_new_tokens 256 \
     --gpu_memory_utilization 0.95 \
     --lang_direction "${SRC_LANG}-${TGT_LANG}" \
     --data_num "${NUM}"
@@ -73,6 +77,32 @@ elif [ "$SETTING" == "single" ]; then
     --model_name $MODEL_NAME_PATH \
     --output_file outputs/${MODEL_NAME}/wmt2024_${SRC_LANG}-${TGT_LANG}_single.jsonl \
     --is_og \
+    --is_tower \
+    --gpu_memory_utilization 0.95 \
+    --lang_direction "${SRC_LANG}-${TGT_LANG}" \
+    --data_num "${NUM}"
+elif [ "$SETTING" == "mturn_context" ]; then
+  NCCL_DEBUG=INFO CUDA_VISIBLE_DEVICES="${DEVICES}" python3 translate.py \
+    --source_file ${DATA_PATH}/wmt24_${SRC_LANG}-${TGT_LANG}.${SRC_LANG}.txt \
+    --target_file ${DATA_PATH}/wmt24_${SRC_LANG}-${TGT_LANG}.${TGT_LANG}.txt \
+    --model_name $MODEL_NAME_PATH \
+    --output_file outputs/${MODEL_NAME}/wmt2024_${SRC_LANG}-${TGT_LANG}_mturn_context.jsonl \
+    --is_conversation \
+    --is_og \
+    --is_provide_all_first \
+    --gpu_memory_utilization 0.95 \
+    --lang_direction "${SRC_LANG}-${TGT_LANG}" \
+    --data_num "${NUM}"
+elif [ "$SETTING" == "mturn_icl_context" ]; then
+  NCCL_DEBUG=INFO CUDA_VISIBLE_DEVICES="${DEVICES}" python3 translate.py \
+    --source_file ${DATA_PATH}/wmt24_${SRC_LANG}-${TGT_LANG}.${SRC_LANG}.txt \
+    --target_file ${DATA_PATH}/wmt24_${SRC_LANG}-${TGT_LANG}.${TGT_LANG}.txt \
+    --model_name $MODEL_NAME_PATH \
+    --output_file outputs/${MODEL_NAME}/wmt2024_${SRC_LANG}-${TGT_LANG}_mturn_icl_context.jsonl \
+    --is_conversation \
+    --is_og \
+    --is_provide_all_first \
+    --is_icl \
     --gpu_memory_utilization 0.95 \
     --lang_direction "${SRC_LANG}-${TGT_LANG}" \
     --data_num "${NUM}"
@@ -84,54 +114,8 @@ elif [ "$SETTING" == "single_icl" ]; then
     --output_file outputs/${MODEL_NAME}/wmt2024_${SRC_LANG}-${TGT_LANG}_single_icl.jsonl \
     --is_icl \
     --is_og \
+    --is_tower \
     --gpu_memory_utilization 0.95 \
     --lang_direction "${SRC_LANG}-${TGT_LANG}" \
     --data_num "${NUM}"
 fi
-
-
-# CUDA_VISIBLE_DEVICES=${DEVICES} python3 translate.py \
-#   --source_file ../wmt_devsets/wmt24_en_${LANG}.txt \
-#   --target_file ../wmt_devsets/wmt24_${LANG}.txt \
-#   --model_name $MODEL_NAME_PATH \
-#   --output_file outputs1/${MODEL_NAME}/wmt2024_en_${LANG}_conv_${NUM}.jsonl \
-#   --is_conversation \
-#   --gpu_memory_utilization 0.9 \
-#   --lang_direction en-${LANG} \
-#   --data_num ${NUM} \
-
-# CUDA_VISIBLE_DEVICES=${DEVICES} python3 translate.py \
-#   --source_file ../wmt_devsets/wmt24_en_${LANG}.txt \
-#   --target_file ../wmt_devsets/wmt_seg/wmt24_${LANG}.txt \
-#   --model_name $MODEL_NAME_PATH \
-#   --output_file outputs1/${MODEL_NAME}/wmt2024_en_${LANG}_${NUM}.jsonl \
-#   --lang_direction en-${LANG} \
-#   --data_num ${NUM} \
-
-# CUDA_VISIBLE_DEVICES=${DEVICES} python3 translate.py \
-#   --source_file ../wmt_devsets/wmt24_en_${LANG}.txt \
-#   --target_file ../wmt_devsets/wmt24_${LANG}.txt \
-#   --model_name $MODEL_NAME_PATH \
-#   --output_file outputs1/${MODEL_NAME}/wmt2024_en_${LANG}_all_icl_1shot.jsonl \
-#   --is_icl \
-#   --lang_direction en-${LANG} \
-#   --data_num ${NUM} \
-
-# CUDA_VISIBLE_DEVICES=${DEVICES} python3 translate.py \
-#   --source_file ../wmt_devsets/wmt24_en_${LANG}.txt \
-#   --target_file ../wmt_devsets/wmt24_${LANG}.txt \
-#   --model_name $MODEL_NAME_PATH \
-#   --output_file outputs1/${MODEL_NAME}/wmt2024_en_${LANG}_seg_icl_1shot.jsonl \
-#   --is_segment \
-#   --is_icl \
-#   --lang_direction en-${LANG} \
-#   --data_num ${NUM} \
-
-# CUDA_VISIBLE_DEVICES=${DEVICES} python3 translate.py \
-#   --source_file ../wmt_devsets/wmt24_en_${LANG}.txt \
-#   --target_file ../wmt_devsets/wmt24_${LANG}.txt \
-#   --model_name $MODEL_NAME_PATH \
-#   --output_file outputs1/${MODEL_NAME}/wmt2024_en_${LANG}_seg_${NUM}.jsonl \
-#   --is_segment \
-#   --lang_direction en-${LANG} \
-#   --data_num ${NUM} \

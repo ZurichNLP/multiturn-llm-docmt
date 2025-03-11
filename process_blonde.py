@@ -26,7 +26,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_name", default="gpt-4o-mini", type=str)
     parser.add_argument("--langs", default=["ru", "uk", "ja", "is"], type=list)
-    parser.add_argument("--input_path", default="outputs/Meta-Llama-3.1-8B-Instruct/wmt2023_en_zh_en_mturn_icl._gen.jsonl", type=str)
+    parser.add_argument("--input_path", default="outputs/Meta-Llama-3.1-8B-Instruct/wmt2023_zh-en_mturn_icl._gen.jsonl", type=str)
     parser.add_argument("--output_path", default="results/Meta-Llama-3.1-8b-Instruct-blonde.jsonl", type=str)
 
     return parser.parse_args()
@@ -37,7 +37,7 @@ def main():
     # data = data[-10:]
     data = parse_input(data)
     langs = ['zh']
-    settings = ['seg', 'seg_icl', 'mturn', 'mturn_icl']
+    settings = ['seg', 'seg_icl', 'mturn', 'mturn_icl', 'mturn_context', 'mturn_icl_context']
     last_lang = 'zh'
     last_setting = 'mturn_icl'
     res_all = []

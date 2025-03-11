@@ -190,8 +190,19 @@ def get_trans_prompt(p, lang_direction, is_icl=False, is_tower=False, is_og=Fals
         messages.append({'role': 'user',
                      'content': user_prompt.format(target_lang, source_lang, p),
                      })
-    print('messages', messages)
-    print('-'*100)
+    #print('messages', messages)
+    #print('-'*100)
+    return messages
+
+def get_context_prompt(doct_text):
+    sys_prompt = 'You are a good translator.'
+    user_prompt = f'You will be given a document, and you need to do a translation sentence by sentence. The document is: \n {doct_text}'
+    messages = [{'role': 'system',
+                 'content': sys_prompt
+                 },
+                {'role': 'user',
+                 'content': user_prompt
+                 }]
     return messages
 
 if __name__ == '__main__':
@@ -210,6 +221,7 @@ if __name__ == '__main__':
     parser.add_argument('--prefix_sentence_num', type=int, default=1)
     parser.add_argument('--is_segment', action='store_true')
     parser.add_argument('--is_conversation', action='store_true')
+    parser.add_argument('--is_provide_all_first', action='store_true')
     parser.add_argument('--by_sentence', action='store_true')
     parser.add_argument('--is_sentence', action='store_true')
     parser.add_argument('--n_paragraph', type=int, default=1)
@@ -233,12 +245,26 @@ if __name__ == '__main__':
     source_texts = processed_documents_source
     target_texts = processed_documents_target
     print('length of target texts', len(target_texts))
+    print('args.is_tower', args.is_tower)
+    print('args.is_og', args.is_og)
+    print('args.is_icl', args.is_icl)
+    print('args.lang_direction', args.lang_direction)
+    print('args.is_conversation', args.is_conversation)
+    print('args.is_segment', args.is_segment)
+    print('args.data_num', args.data_num)
+    print('args.is_provide_all_first', args.is_provide_all_first)
     references = target_texts
 
     trans_prompts = []
     if args.is_conversation:
         for doc in source_texts:
             trans_prompt = []
+            if args.is_provide_all_first:
+                doc_all_text = ''
+                for text in doc:
+                    doc_all_text += text + ' '
+                context_prompt = get_context_prompt(doc_all_text)
+                trans_prompt.append(context_prompt)
             for text in doc:
                 text = get_trans_prompt(text, args.lang_direction, args.is_icl, args.is_tower, args.is_og, args.shot_num)
                 trans_prompt.append(text)
@@ -249,6 +275,7 @@ if __name__ == '__main__':
             for text in doc:
                 text = get_trans_prompt(text, args.lang_direction, args.is_icl, args.is_tower, args.is_og, args.shot_num)
                 trans_prompt.append(text)
+            #print('trans_prompt', trans_prompt)
             trans_prompts.append(trans_prompt)
     else:
         for text in source_texts:
@@ -264,14 +291,21 @@ if __name__ == '__main__':
             prev_prefix = []
             res_all = ' '
             translation_split = []
+            if args.is_provide_all_first:
+                prev_prefix = trans_prompt.pop(0)
             for text in trans_prompt:
-                if len(prev_prefix) == 0:
+                if args.is_provide_all_first and len(prev_prefix) == 2:
+                    text.pop(0)
+                    prev_prefix.extend(text)
+                elif len(prev_prefix) == 0:
                     prev_prefix = text
                 else:
                     prev_prefix.append(text[-1])
                 output = translator.generate(prev_prefix)
                 res = {'role': 'assistant', 'content': output}
                 prev_prefix.append(res)
+                # print('prev_prefix', prev_prefix)
+                # print('-'*100)
                 if args.is_tower or args.is_og:
                     res['content'] = remove_triple_backlashes(res['content'])
                     res_all += res['content'] + ' '
