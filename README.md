@@ -1,4 +1,7 @@
-# MTurn_MT
+# Source-primed Multi-turn Conversation Helps LLMs Translate Documents
+
+This is the code to replicate the Source-primed Multi-turn Translation in the paper [Source-primed Multi-turn Conversation Helps Large Language Models
+Translate Documents](https://arxiv.org/pdf/2503.10494). [[cite]](#citation)
 
 ## 1. Installation:
 
@@ -29,6 +32,7 @@ If you don't need to use gpt models, you can run the following command to transl
 ```bash
 bash scripts/run.sh
 ```
+'mturn_icl_context' means our source-primed multi-turn translation, 'mturn_icl' and 'mturn' is multi-turn without source-primed.
 
 ## 4. Evaluate the translation
 
@@ -42,4 +46,19 @@ If you need to evaluate through Comet, run the following command:
 
 ```bash
 bash eval/eval_comet.sh
+```
+
+
+## Citation
+Please consider citing us if you use our materials.
+```
+@misc{hu2025sourceprimedmultiturnconversationhelps,
+      title={Source-primed Multi-turn Conversation Helps Large Language Models Translate Documents}, 
+      author={Hanxu Hu and Jannis Vamvas and Rico Sennrich},
+      year={2025},
+      eprint={2503.10494},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2503.10494}, 
+}
 ```
